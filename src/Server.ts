@@ -9,7 +9,7 @@ export default class Server extends Router {
   private server?: http.Server;
   private isListening: boolean = false;
 
-  listen(port: number, callback: () => void) {
+  listen(port: number, callback?: () => void) {
     if (this.isListening) {
       console.log("Server Already running");
       return;
@@ -72,7 +72,7 @@ export default class Server extends Router {
 
       if (match) {
         const [handler, matchedObject] = match;
-        req.query = matchedObject.params;
+        req.params = matchedObject.params;
         handler.handler(req, res, next);
       }
     };

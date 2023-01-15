@@ -103,7 +103,7 @@ export default class Router {
     return this;
   }
 
-  compileHandlers() {
+  protected compileHandlers() {
     // flush all handlers (if any)
     this.handlers = [];
     this.stack.forEach((elm) => {

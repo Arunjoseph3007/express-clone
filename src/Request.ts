@@ -1,4 +1,4 @@
-import { IncomingMessage } from "http";
+import { IncomingHttpHeaders, IncomingMessage } from "http";
 import getRawBody from "raw-body";
 
 export default class Request {
@@ -6,24 +6,24 @@ export default class Request {
   public orginalUrl: string;
   public method: string;
   public url: string;
-  public params: URLSearchParams;
+  public params: any;
   public query: any;
-  public headers: Object;
+  public headers: IncomingHttpHeaders;
   public body: any;
   public cookies: any;
   private _bodyP: Promise<Buffer>;
 
   constructor(req: IncomingMessage) {
-    const url = new URL(req.url || "", "http://localhost:3000");
+    const url = new URL(req.url || "", `http://${req.headers.host}`);
 
     this.req = req;
     this.method = req.method?.toUpperCase() || "";
     this.orginalUrl = req.url || "";
-    this.cookies = req;
+    this.cookies = req.headers.cookie;
     this.headers = req.headers;
     this.url = url.pathname;
-    this.params = url.searchParams;
-    this.query = {};
+    this.query = url.searchParams;
+    this.params = {};
     this._bodyP = getRawBody(req);
     this.body = {};
   }

@@ -15,8 +15,12 @@ app.get("/hey", (req, res) => {
   res.json({ hello: 12345 });
 });
 
-app.get("/hey/:id", (req, res) => {
-  res.json({ params: req.query.id });
+app.get("/hey/:params", (req, res) => {
+  res.json({ params: req.params.params });
+});
+
+app.get("/query", (req, res) => {
+  res.json({ query: req.query });
 });
 
 app.listen(8080, () => console.log("Server Started..."));
