@@ -2,12 +2,19 @@ import http, { IncomingMessage, ServerResponse } from "http";
 import Router from "./Router";
 import Request from "./Request";
 import Response from "./Response";
-import { Handler, HandlerType, MethodType } from "./interfaces/handler";
+import {
+  ErrorHandler,
+  Handler,
+  HandlerType,
+  MethodType,
+  NextFunction,
+} from "./interfaces/handler";
 import { match, MatchResult } from "path-to-regexp";
 
 export default class Server extends Router {
   private server?: http.Server;
   private isListening: boolean = false;
+  private errorHandler: ErrorHandler = (a, b, c) => 0;
 
   listen(port: number, callback?: () => void) {
     if (this.isListening) {
@@ -27,6 +34,11 @@ export default class Server extends Router {
     } else {
       console.log("Server not running");
     }
+  }
+
+  error(cb: ErrorHandler) {
+    this.errorHandler = cb;
+    return this;
   }
 
   private findMatches(req: Request) {
@@ -67,16 +79,20 @@ export default class Server extends Router {
 
     const allMatchedHandlers = this.findMatches(req);
 
-    const next = () => {
+    const next: NextFunction = async (err?: any) => {
+      if (err) {
+        await this.errorHandler(err, req, res);
+        return;
+      }
       const match = allMatchedHandlers.shift();
 
       if (match) {
         const [handler, matchedObject] = match;
         req.params = matchedObject.params;
-        handler.handler(req, res, next);
+        await handler.handler(req, res, next);
       }
     };
 
-    next();
+    await next();
   }
 }

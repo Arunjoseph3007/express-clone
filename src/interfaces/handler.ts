@@ -1,6 +1,10 @@
 import Request from "../Request";
 import Response from "../Response";
 
+export type NextFunction = (err?: any) => any;
+
+export type ErrorHandler = (err: any, req: Request, res: Response) => any;
+
 export enum HandlerType {
   endpoint,
   middleware,
@@ -18,7 +22,7 @@ export enum MethodType {
 export type handlerFunction = (
   req: Request,
   res: Response,
-  next: Function
+  next: NextFunction
 ) => any;
 
 export interface Handler {

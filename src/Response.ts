@@ -1,4 +1,5 @@
 import { OutgoingHttpHeader, OutgoingHttpHeaders, ServerResponse } from "http";
+import send from "send";
 
 export default class Response {
   public res: ServerResponse;
@@ -54,6 +55,12 @@ export default class Response {
 
   success(data: any) {
     this.status(200).json(data);
+    return this;
+  }
+
+  sendFile(path: string) {
+    const file = send(this.res.req, encodeURI(path));
+    file.pipe(this.res);
     return this;
   }
 }

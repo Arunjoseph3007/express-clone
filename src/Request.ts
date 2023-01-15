@@ -1,5 +1,6 @@
 import { IncomingHttpHeaders, IncomingMessage } from "http";
 import getRawBody from "raw-body";
+import { parseCookie } from "./utils/parseCookies";
 
 export default class Request {
   public req: IncomingMessage;
@@ -10,7 +11,7 @@ export default class Request {
   public query: any;
   public headers: IncomingHttpHeaders;
   public body: any;
-  public cookies: any;
+  public cookies: Record<string, string>;
   private _bodyP: Promise<Buffer>;
 
   constructor(req: IncomingMessage) {
@@ -19,7 +20,7 @@ export default class Request {
     this.req = req;
     this.method = req.method?.toUpperCase() || "";
     this.orginalUrl = req.url || "";
-    this.cookies = req.headers.cookie;
+    this.cookies = parseCookie(req.headers.cookie)
     this.headers = req.headers;
     this.url = url.pathname;
     this.query = url.searchParams;

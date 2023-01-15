@@ -1,26 +1,64 @@
+import Router from "./Router";
 import Server from "./Server";
 
 const app = new Server();
 
+//@ Error Handling
+app.error((err, req, res) => {
+  res.json({ err, message: "something went wrong" });
+});
+
+//@ Error handleing
+app.get("/error", (_q, _s, next) => {
+  next("heyeyeyey");
+});
+
+//@ Middleware like pattern
 app.get("/", (req, res, next) => {
   req.body = { hey: "body" };
   next();
 });
 
+//@ Simple Routes
 app.get("/", (req, res) => {
   return res.json({ sec: "from second endpoint", hey: req.body.hey });
 });
 
+//@ Again simple routes
 app.get("/hey", (req, res) => {
   res.json({ hello: 12345 });
 });
 
+//@ Route with params
 app.get("/hey/:params", (req, res) => {
   res.json({ params: req.params.params });
 });
 
+//@ Route with query
 app.get("/query", (req, res) => {
   res.json({ query: req.query });
 });
+
+//@ Send Files
+app.get("/file", (_, res) => {
+  res.sendFile("public/index.html");
+});
+
+//@ Works with router as well
+const myRouter = new Router();
+
+myRouter.all("/", (req, res) => {
+  res.json({ hey: "default" });
+});
+
+myRouter.get("/hey", (req, res) => {
+  res.json({ thisIs: "response from router" });
+});
+
+myRouter.get("/:id", (req, res) => {
+  res.json([1, 2, 3, req.params.id]);
+});
+
+app.addRouter("/router", myRouter);
 
 app.listen(8080, () => console.log("Server Started..."));
