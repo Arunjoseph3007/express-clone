@@ -5,7 +5,7 @@ import { parseCookie } from "./utils/parseCookies";
 export default class Request<
   TBody extends any = any,
   TParam extends Record<string, string | number> = any,
-  TQuery extends any = any
+  TQuery extends Record<string, string | number> = any
 > {
   public req: IncomingMessage;
   public orginalUrl: string;
@@ -26,7 +26,7 @@ export default class Request<
     this.cookies = parseCookie(req.headers.cookie);
     this.headers = req.headers;
     this.url = url.pathname;
-    this.query = url.searchParams as TQuery;
+    this.query = Object.fromEntries(url.searchParams) as TQuery;
     this.params = {} as TParam;
     this.body = {} as TBody;
   }

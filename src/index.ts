@@ -1,8 +1,22 @@
 import Request from "./Request";
 import Router from "./Router";
 import Server from "./Server";
+import { handlerFunction } from "./interfaces/handler";
 
 const app = new Server();
+
+const authMiddleare: handlerFunction = (req, res, next) => {
+  const username = req.query.username;
+  const password = req.query.password;
+
+  console.log({ username, password });
+
+  if (username && password && username == password) {
+    next();
+  } else {
+    return res.json({ greet: "Unauthenticated" });
+  }
+};
 
 //@ Error Handling
 app.error((err, req, res) => {
@@ -30,6 +44,11 @@ app.get(
 app.get("/", (req, res, next) => {
   req.body = { hey: "body" };
   next();
+});
+
+//@ Middleware pattern
+app.get("/middle", authMiddleare, (req, res) => {
+  res.json({ greet: "You are authenticated" });
 });
 
 //@ Simple Routes
