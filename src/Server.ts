@@ -14,7 +14,9 @@ import { match, MatchResult } from "path-to-regexp";
 export default class Server extends Router {
   private server?: http.Server;
   private isListening: boolean = false;
-  private errorHandler: ErrorHandler = (a, b, c) => 0;
+  private errorHandler: ErrorHandler = () => null;
+
+  static json(){}
 
   listen(port: number, callback?: () => void) {
     if (this.isListening) {
@@ -79,10 +81,9 @@ export default class Server extends Router {
 
     const allMatchedHandlers = this.findMatches(req);
 
-    const next: NextFunction = async (err?: any) => {
+    const next: NextFunction = async (err) => {
       if (err) {
-        await this.errorHandler(err, req, res);
-        return;
+        return await this.errorHandler(err, req, res);
       }
       const match = allMatchedHandlers.shift();
 

@@ -1,3 +1,4 @@
+import Request from "./Request";
 import Router from "./Router";
 import Server from "./Server";
 
@@ -12,6 +13,18 @@ app.error((err, req, res) => {
 app.get("/error", (_q, _s, next) => {
   next("heyeyeyey");
 });
+
+//@ Support Generic Requests
+app.get(
+  "/generic",
+  (req: Request<{ hey: string }, {}, { search: string }>, res) => {
+    const hey = req.body.hey; //? Vaild Typescript
+    //? const yeh=req.body.yeh; (InVaild Typescript)
+    const search = req.query.search; //? Valid Typescript
+    //? const hcraes = req.query.hcraes (InValid Typescript)
+    return res.json({ hey, search });
+  }
+);
 
 //@ Middleware like pattern
 app.get("/", (req, res, next) => {

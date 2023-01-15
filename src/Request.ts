@@ -2,17 +2,20 @@ import { IncomingHttpHeaders, IncomingMessage } from "http";
 import getRawBody from "raw-body";
 import { parseCookie } from "./utils/parseCookies";
 
-export default class Request {
+export default class Request<
+  TBody extends any = any,
+  TParam extends Record<string, string | number> = any,
+  TQuery extends any = any
+> {
   public req: IncomingMessage;
   public orginalUrl: string;
   public method: string;
   public url: string;
-  public params: any;
-  public query: any;
+  public params: TParam;
+  public query: TQuery;
   public headers: IncomingHttpHeaders;
-  public body: any;
+  public body: TBody;
   public cookies: Record<string, string>;
-  private _bodyP: Promise<Buffer>;
 
   constructor(req: IncomingMessage) {
     const url = new URL(req.url || "", `http://${req.headers.host}`);
@@ -20,17 +23,16 @@ export default class Request {
     this.req = req;
     this.method = req.method?.toUpperCase() || "";
     this.orginalUrl = req.url || "";
-    this.cookies = parseCookie(req.headers.cookie)
+    this.cookies = parseCookie(req.headers.cookie);
     this.headers = req.headers;
     this.url = url.pathname;
-    this.query = url.searchParams;
-    this.params = {};
-    this._bodyP = getRawBody(req);
-    this.body = {};
+    this.query = url.searchParams as TQuery;
+    this.params = {} as TParam;
+    this.body = {} as TBody;
   }
 
   async init() {
-    const rawBody = await this._bodyP;
+    const rawBody = await getRawBody(this.req);
 
     try {
       if (this.req.headers["content-type"] == "application/json") {
