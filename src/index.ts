@@ -2,6 +2,7 @@ import Request from "./Request";
 import Router from "./Router";
 import Server from "./Server";
 import { handlerFunction } from "./interfaces/handler";
+import { logger } from "./middlewares/logger";
 
 const app = new Server();
 
@@ -17,6 +18,9 @@ const authMiddleare: handlerFunction = (req, res, next) => {
     return res.json({ greet: "Unauthenticated" });
   }
 };
+
+//@ Middlewares
+app.use(logger);
 
 //@ Error Handling
 app.error((err, req, res) => {

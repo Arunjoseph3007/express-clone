@@ -29,7 +29,7 @@ export default class Router {
 
   use(middleware: handlerFunction) {
     this.addHandler({
-      path: "/",
+      path: "/(.*)",
       method: MethodType.ALL,
       handler: middleware,
       type: HandlerType.middleware,

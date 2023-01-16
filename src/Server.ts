@@ -16,7 +16,7 @@ export default class Server extends Router {
   private isListening: boolean = false;
   private errorHandler: ErrorHandler = () => null;
 
-  static json(){}
+  static json() {}
 
   listen(port: number, callback?: () => void) {
     if (this.isListening) {
@@ -43,35 +43,19 @@ export default class Server extends Router {
     return this;
   }
 
-  private findMatches(req: Request) {
+  private findMatches(req: Request): Array<[Handler, MatchResult]> {
     return this.handlers
-      .map((h) => {
-        if (h.type == HandlerType.endpoint) {
-          return [h, this.matchEndPoint(h, req)];
-        } else if (h.type == HandlerType.middleware) {
-          return [h, this.matchMiddleware(h, req)];
-        } else {
-          return [h, false];
-        }
-      })
+      .map((h) => [h, this.match(h, req)])
       .filter((h) => Boolean(h[1])) as Array<[Handler, MatchResult]>;
   }
 
-  private matchEndPoint(handler: Handler, req: Request) {
+  private match(handler: Handler, req: Request) {
     const sameMethod = handler.method == req.method;
     const matchAll = handler.method == MethodType.ALL;
     const methodMatch = sameMethod || matchAll;
     const pathMatchRegex = match(handler.path, { decode: decodeURIComponent });
     const pathMatch = pathMatchRegex(req.url);
     return methodMatch && pathMatch;
-  }
-
-  private matchMiddleware(middleware: Handler, req: Request) {
-    const pathMatchRegex = match(middleware.path, {
-      decode: decodeURIComponent,
-    });
-    const pathMatch = pathMatchRegex(req.url);
-    return pathMatch;
   }
 
   private async handle(q: IncomingMessage, s: ServerResponse) {
