@@ -5,14 +5,14 @@ import { parseCookie } from "./utils/parseCookies";
 export default class Request<
   TBody extends any = any,
   TParam extends Record<string, string | number> = any,
-  TQuery extends string = string
+  TQuery extends Record<string, string | number> = any
 > {
   public req: IncomingMessage;
   public orginalUrl: string;
   public method: string;
   public url: string;
   public params: TParam;
-  public query: Map<TQuery, string>;
+  public query: TQuery;
   public headers: IncomingHttpHeaders;
   public body: TBody;
   public cookies: Record<string, string>;
@@ -26,7 +26,7 @@ export default class Request<
     this.cookies = parseCookie(req.headers.cookie);
     this.headers = req.headers;
     this.url = url.pathname;
-    this.query = new Map(url.searchParams.entries()) as Map<TQuery, string>;
+    this.query = Object.fromEntries(url.searchParams) as TQuery;
     this.params = {} as TParam;
     this.body = {} as TBody;
   }

@@ -5,13 +5,9 @@ import { handlerFunction } from "./interfaces/handler";
 
 const app = new Server();
 
-type X<T extends string = string> = Map<T, string>;
-
-const c: X<"e" | "wew"> = new Map([["e", "123"]]);
-
 const authMiddleare: handlerFunction = (req, res, next) => {
-  const username = req.query.get("username");
-  const password = req.query.get("password");
+  const username = req.query.username;
+  const password = req.query.password;
 
   console.log({ username, password });
 
@@ -33,13 +29,16 @@ app.get("/error", (_q, _s, next) => {
 });
 
 //@ Support Generic Requests
-app.get("/generic", (req: Request<{ hey: string }, {},'search'>, res) => {
-  const hey = req.body.hey; //? Vaild Typescript
-  //? const yeh=req.body.yeh; (InVaild Typescript)
-  const search = req.query.get("search"); //? Valid Typescript
-  // ? const hcraes = req.query.get("hcraes") (InValid Typescript)
-  return res.json({ hey, search });
-});
+app.get(
+  "/generic",
+  (req: Request<{ hey: string }, {}, { search: string }>, res) => {
+    const hey = req.body.hey; //? Vaild Typescript
+    //? const yeh=req.body.yeh; (InVaild Typescript)
+    const search = req.query.search; //? Valid Typescript
+    //? const hcraes = req.query.hcraes (InValid Typescript)
+    return res.json({ hey, search });
+  }
+);
 
 //@ Middleware like pattern
 app.get("/", (req, res, next) => {
