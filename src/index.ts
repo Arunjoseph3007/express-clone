@@ -2,7 +2,7 @@ import Request from "./Request";
 import Router from "./Router";
 import Server from "./Server";
 import { handlerFunction } from "./interfaces/handler";
-import { logger } from "./middlewares/logger";
+import { publicFiles, Logger } from "./middlewares";
 
 const app = new Server();
 
@@ -20,7 +20,11 @@ const authMiddleare: handlerFunction = (req, res, next) => {
 };
 
 //@ Middlewares
-app.use(logger);
+app.use(Logger(Logger.LONG));
+
+//@ Serve static files
+//! Not Optimized at all
+app.use(publicFiles("public", "media"));
 
 //@ Error Handling
 app.error((err, req, res) => {
@@ -78,6 +82,20 @@ app.get("/query", (req, res) => {
 //@ Send Files
 app.get("/file", (_, res) => {
   res.sendFile("public/index.html");
+});
+
+//@ Raw html
+app.get("/raw", (_, res) => {
+  // res.set("content-type", "application/html");
+  res.send(`<div>
+  <h1>hey</h1>
+  <button>hey</button>
+  </div>`);
+});
+
+//@ Download
+app.get("/download", (req, res) => {
+  res.download("public/tree.jpg");
 });
 
 //@ Works with router as well

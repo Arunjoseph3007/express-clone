@@ -1,14 +1,24 @@
 import { OutgoingHttpHeader, OutgoingHttpHeaders, ServerResponse } from "http";
 import send from "send";
+import contentDisposition from "content-disposition";
+import { htmlTemplate } from "./utils/htmlTemplate";
 
 export default class Response {
   public res: ServerResponse;
+  public isBrowserRequest: boolean;
 
   constructor(res: ServerResponse) {
     this.res = res;
+    this.isBrowserRequest =
+      this.res.req.headers["sec-fetch-dest"] == "document";
   }
 
   set(field: string, value: string) {
+    this.res.setHeader(field, value);
+    return this;
+  }
+
+  setHeader(field: string, value: string) {
     this.res.setHeader(field, value);
     return this;
   }
@@ -24,7 +34,12 @@ export default class Response {
   }
 
   send(message: any, cb?: (error: Error | null | undefined) => void) {
-    this.write(message, cb);
+    if (this.isBrowserRequest) {
+      this.setHeader("Content-Type", "text/html");
+      this.write(htmlTemplate(this, message), cb);
+    } else {
+      this.write(message, cb);
+    }
     this.end();
     return this;
   }
@@ -58,9 +73,14 @@ export default class Response {
     return this;
   }
 
-  sendFile(path: string) {
-    const file = send(this.res.req, encodeURI(path));
+  sendFile(path: string, options?: send.SendOptions) {
+    const file = send(this.res.req, encodeURI(path), options);
     file.pipe(this.res);
     return this;
+  }
+
+  download(filePath: string, options?: send.SendOptions) {
+    this.setHeader("content-disposition", contentDisposition(filePath));
+    return this.sendFile(filePath);
   }
 }

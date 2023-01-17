@@ -18,6 +18,7 @@ interface HandlerController extends Handler {
 export default class Router {
   private stack: Array<HandlerController | RouterController> = [];
   protected handlers: Array<Handler> = [];
+  protected docs: Array<any> = [];
 
   addHandler(handler: Handler) {
     this.stack.push({ ...handler, isRouter: false });

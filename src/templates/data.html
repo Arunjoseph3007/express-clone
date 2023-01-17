@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Express Clone</title>
+  </head>
+  <body>
+    <nav>
+      <h2>EXPRESS</h2>
+      <div>
+        <button>login</button>
+        <button>signup</button>
+      </div>
+    </nav>
+    <main>
+      <div class="data"><% data %></div>
+    </main>
+  </body>
+  <style>
+    *,
+    *::after,
+    *::before {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    nav {
+      background-color: rgb(16, 16, 16);
+      color: rgb(255, 255, 255);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    nav button {
+      border: none;
+      padding: 0.5rem;
+      background: cornflowerblue;
+      color: white;
+      font-size: 1rem;
+      font-weight: bolder;
+      margin-inline: 0.7rem;
+      text-transform: uppercase;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: whitesmoke;
+      min-height: 100vh;
+    }
+
+    .data {
+      width: 70vw;
+      box-shadow: -5px 5px 10px 0px rgb(191, 190, 190);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-block: 2rem;
+      background-color: white;
+    }
+  </style>
+</html>

@@ -11,6 +11,7 @@
     "buildAndStart": "tsc -p . && node dist/index.js"
   },
   "devDependencies": {
+    "@types/content-disposition": "^0.5.5",
     "@types/node": "^18.11.18",
     "@types/send": "^0.17.1",
     "nodemon": "^2.0.20",
@@ -18,6 +19,7 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
+    "content-disposition": "^0.5.4",
     "path-to-regexp": "^6.2.1",
     "raw-body": "^2.5.1",
     "send": "0.18.0"

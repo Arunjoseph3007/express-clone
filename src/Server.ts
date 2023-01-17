@@ -5,7 +5,6 @@ import Response from "./Response";
 import {
   ErrorHandler,
   Handler,
-  HandlerType,
   MethodType,
   NextFunction,
 } from "./interfaces/handler";
@@ -14,7 +13,9 @@ import { match, MatchResult } from "path-to-regexp";
 export default class Server extends Router {
   private server?: http.Server;
   private isListening: boolean = false;
-  private errorHandler: ErrorHandler = () => null;
+  private errorHandler: ErrorHandler = (err, req, res) => {
+    return res.status(400).json({ err, message: "Something went wrong" });
+  };
 
   static json() {}
 

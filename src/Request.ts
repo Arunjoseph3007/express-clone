@@ -12,6 +12,7 @@ export default class Request<
   public method: string;
   public url: string;
   public params: TParam;
+  public isBrowserRequest: boolean;
   public query: TQuery;
   public headers: IncomingHttpHeaders;
   public body: TBody;
@@ -21,12 +22,14 @@ export default class Request<
     const url = new URL(req.url || "", `http://${req.headers.host}`);
 
     this.req = req;
+    req.headers["user-agent"];
     this.method = req.method?.toUpperCase() || "";
     this.orginalUrl = req.url || "";
     this.cookies = parseCookie(req.headers.cookie);
     this.headers = req.headers;
     this.url = url.pathname;
     this.query = Object.fromEntries(url.searchParams) as TQuery;
+    this.isBrowserRequest = req.headers["sec-fetch-dest"] == "document";
     this.params = {} as TParam;
     this.body = {} as TBody;
   }
