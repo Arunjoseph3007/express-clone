@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../../public/prism.css" />
-    <title>My Express Clone</title>
+    <!-- <link rel="stylesheet" href="../../public/prism.css" /> -->
+    <title>API Documnetation</title>
   </head>
   <body>
     <nav>
-      <h2>EXPRESS</h2>
+      <h2>API Docs</h2>
       <div>
         <button>login</button>
         <button>signup</button>
@@ -17,19 +17,12 @@
     </nav>
     <main>
       <div class="data">
-        <h2>Response</h2>
+        <h2>Documnetation</h2>
         <br />
-        <div class="details">
-          <p>URL : <% url %></p>
-          <p>Method : <% method %></p>
-          <p>Status : <% status %></p>
-          <p>Route : <% route %></p>
-        </div>
-        <br />
-        <pre><code class="language-json"><% data %></code></pre>
+        <div class="doc"><% doc %></div>
       </div>
     </main>
-    <script src="../../public/prism.js"></script>
+    <!-- <script src="../../public/prism.js"></script> -->
   </body>
   <style>
     *,
@@ -68,7 +61,6 @@
       background-color: whitesmoke;
       min-height: 100vh;
     }
-
     .data {
       width: 70vw;
       box-shadow: -5px 5px 10px 0px rgb(191, 190, 190);
@@ -77,12 +69,35 @@
       margin-block: 2rem;
       background-color: white;
     }
-    .data * {
-      font-family: monospace !important;
-      font-weight: 900;
+
+    .route {
+      padding: 0.4rem;
+      border-radius: 5px;
+      margin-block: 0.3rem;
     }
-    .details {
-      font-size: 0.9rem;
+
+    .route-group {
+      border: 1px solid gray;
+      padding: 0.1rem;
+    }
+
+    .route.GET {
+      background: blue;
+    }
+    .route.POST {
+      background: greenyellow;
+    }
+    .route.DELETE {
+      background: red;
+    }
+    .route.PUT {
+      background: orange;
+    }
+    .route.PATCH {
+      background: yellow;
+    }
+    .route.ALL {
+      background: magenta;
     }
   </style>
 </html>

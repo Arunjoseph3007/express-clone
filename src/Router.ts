@@ -16,9 +16,8 @@ interface HandlerController extends Handler {
 }
 
 export default class Router {
-  private stack: Array<HandlerController | RouterController> = [];
+  stack: Array<HandlerController | RouterController> = [];
   protected handlers: Array<Handler> = [];
-  protected docs: Array<any> = [];
 
   addHandler(handler: Handler) {
     this.stack.push({ ...handler, isRouter: false });
@@ -97,6 +96,19 @@ export default class Router {
         path,
         handler,
         method: MethodType.PATCH,
+        type: HandlerType.endpoint,
+      });
+    });
+
+    return this;
+  }
+
+  delete(path: string, ...handlers: handlerFunction[]) {
+    handlers.forEach((handler) => {
+      this.addHandler({
+        path,
+        handler,
+        method: MethodType.DELETE,
         type: HandlerType.endpoint,
       });
     });

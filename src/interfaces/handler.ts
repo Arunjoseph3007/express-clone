@@ -16,7 +16,7 @@ export enum MethodType {
   PATCH = "PATCH",
   POST = "POST",
   DELETE = "DELETE",
-  ALL = "*",
+  ALL = "ALL",
 }
 
 export type handlerFunction = (

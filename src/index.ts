@@ -19,8 +19,13 @@ const authMiddleare: handlerFunction = (req, res, next) => {
   }
 };
 
+app.post("/post", () => {});
+app.put("/post", () => {});
+app.patch("/post", () => {});
+app.delete("/post", () => {});
+
 //@ Middlewares
-app.use(Logger(Logger.LONG));
+app.use(Logger(Logger.DEV));
 
 //@ Serve static files
 //! Not Optimized at all

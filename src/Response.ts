@@ -2,10 +2,12 @@ import { OutgoingHttpHeader, OutgoingHttpHeaders, ServerResponse } from "http";
 import send from "send";
 import contentDisposition from "content-disposition";
 import { htmlTemplate } from "./utils/htmlTemplate";
+import { Handler } from "./interfaces/handler";
 
 export default class Response {
   public res: ServerResponse;
   public isBrowserRequest: boolean;
+  public route?: Handler;
 
   constructor(res: ServerResponse) {
     this.res = res;
@@ -58,7 +60,7 @@ export default class Response {
     return this;
   }
 
-  pipe(dest: NodeJS.WritableStream, opt?: { end?: boolean | undefined }) {
+  pipe(dest: NodeJS.WritableStream, opt?: { end?: boolean }) {
     return this.res.pipe(dest, opt);
   }
 
@@ -81,6 +83,6 @@ export default class Response {
 
   download(filePath: string, options?: send.SendOptions) {
     this.setHeader("content-disposition", contentDisposition(filePath));
-    return this.sendFile(filePath);
+    return this.sendFile(filePath, options);
   }
 }
