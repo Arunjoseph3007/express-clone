@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../../public/prism.css" />
     <title>My Express Clone</title>
   </head>
   <body>
@@ -15,8 +16,19 @@
       </div>
     </nav>
     <main>
-      <div class="data"><% data %></div>
+      <div class="data">
+        <h2>Response</h2>
+        <br />
+        <div class="details">
+          <p>URL : <% url %></p>
+          <p>Method : <% method %></p>
+          <p>Status : <% status %></p>
+        </div>
+        <br />
+        <pre><code class="language-json"><% data %></code></pre>
+      </div>
     </main>
+    <script src="../../public/prism.js"></script>
   </body>
   <style>
     *,
@@ -63,6 +75,13 @@
       padding: 1rem;
       margin-block: 2rem;
       background-color: white;
+    }
+    .data * {
+      font-family: monospace !important;
+      font-weight: 900;
+    }
+    .details {
+      font-size: 0.9rem;
     }
   </style>
 </html>
