@@ -1,10 +1,11 @@
 import { IncomingHttpHeaders, IncomingMessage } from "http";
 import getRawBody from "raw-body";
 import { parseCookie } from "./utils/parseCookies";
+import { ParamsDictionary } from "./interfaces/RouteParameter";
 
 export default class Request<
+  TParam extends ParamsDictionary = ParamsDictionary,
   TBody extends any = any,
-  TParam extends Record<string, string | number> = any,
   TQuery extends Record<string, string | number> = any
 > {
   public req: IncomingMessage;

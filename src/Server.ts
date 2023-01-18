@@ -10,7 +10,8 @@ import {
   NextFunction,
 } from "./interfaces/handler";
 import { match, MatchResult } from "path-to-regexp";
-import { docTemplate } from "./utils/docTemplate";
+import { DOC, DOCS, docTemplate } from "./utils/docTemplate";
+import { ParamsDictionary } from "./interfaces/RouteParameter";
 
 export default class Server extends Router {
   private server?: http.Server;
@@ -75,7 +76,7 @@ export default class Server extends Router {
 
       if (match) {
         const [handler, matchedObject] = match;
-        req.params = matchedObject.params;
+        req.params = matchedObject.params as ParamsDictionary;
         res.route = handler;
         await handler.handler(req, res, next);
       }
@@ -84,14 +85,14 @@ export default class Server extends Router {
     await next();
   }
 
-  private compileDoc(stack: typeof this.stack = this.stack): any {
+  private compileDoc(stack: typeof this.stack = this.stack): DOCS {
     return stack
       .filter((h) => h.isRouter || h.type == HandlerType.endpoint)
       .map((h) =>
         h.isRouter
           ? { [h.path]: this.compileDoc(h.router.stack) }
           : { method: h.method, path: h.path }
-      );
+      ) as DOCS;
   }
 
   private doc() {
@@ -104,7 +105,7 @@ export default class Server extends Router {
       handler: (req, res) => {
         res.setHeader("Content-Type", "text/html");
         res.write(docTemplate(paths));
-        res.end()
+        res.end();
       },
     });
   }

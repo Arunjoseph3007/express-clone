@@ -2,7 +2,7 @@ import {
   Handler,
   HandlerType,
   MethodType,
-  handlerFunction,
+  HandlerFunction,
 } from "./interfaces/handler";
 
 interface RouterController {
@@ -27,7 +27,7 @@ export default class Router {
     this.stack.push({ path, router, isRouter: true });
   }
 
-  use(middleware: handlerFunction) {
+  use(middleware: HandlerFunction) {
     this.addHandler({
       path: "/(.*)",
       method: MethodType.ALL,
@@ -38,7 +38,7 @@ export default class Router {
     return this;
   }
 
-  all(path: string, ...handlers: handlerFunction[]) {
+  all(path: string, ...handlers: HandlerFunction[]) {
     handlers.forEach((handler) => {
       this.addHandler({
         path,
@@ -51,7 +51,7 @@ export default class Router {
     return this;
   }
 
-  get(path: string, ...handlers: handlerFunction[]) {
+  get<T extends string>(path: T, ...handlers: Array<HandlerFunction>) {
     handlers.forEach((handler) => {
       this.addHandler({
         path,
@@ -64,7 +64,7 @@ export default class Router {
     return this;
   }
 
-  post(path: string, ...handlers: handlerFunction[]) {
+  post(path: string, ...handlers: HandlerFunction[]) {
     handlers.forEach((handler) => {
       this.addHandler({
         path,
@@ -77,7 +77,7 @@ export default class Router {
     return this;
   }
 
-  put(path: string, ...handlers: handlerFunction[]) {
+  put(path: string, ...handlers: HandlerFunction[]) {
     handlers.forEach((handler) => {
       this.addHandler({
         path,
@@ -90,7 +90,7 @@ export default class Router {
     return this;
   }
 
-  patch(path: string, ...handlers: handlerFunction[]) {
+  patch(path: string, ...handlers: HandlerFunction[]) {
     handlers.forEach((handler) => {
       this.addHandler({
         path,
@@ -103,7 +103,7 @@ export default class Router {
     return this;
   }
 
-  delete(path: string, ...handlers: handlerFunction[]) {
+  delete(path: string, ...handlers: HandlerFunction[]) {
     handlers.forEach((handler) => {
       this.addHandler({
         path,

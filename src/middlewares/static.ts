@@ -1,10 +1,10 @@
-import { handlerFunction } from "../interfaces/handler";
+import { HandlerFunction } from "../interfaces/handler";
 import { getAllFilesSync } from "../utils/ls";
 
 export const publicFiles = (
   publicDir: string,
   basePath: string = "/"
-): handlerFunction => {
+): HandlerFunction => {
   const allFiles = getAllFilesSync(publicDir).map((f) => "/" + f);
 
   return async (req, res, next) => {

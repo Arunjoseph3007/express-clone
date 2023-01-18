@@ -1,5 +1,5 @@
 import Request from "../Request";
-import { handlerFunction } from "../interfaces/handler";
+import { HandlerFunction } from "../interfaces/handler";
 
 const RESET = "\x1b[0m";
 const BLUE_FG = "\x1b[36m";
@@ -21,7 +21,7 @@ const TOKENS = new Map<string, (req: Request) => string>([
 
 const TOKEN_ENTRIES = [...TOKENS.entries()];
 
-export const Logger = (logPattern: string): handlerFunction => {
+export const Logger = (logPattern: string): HandlerFunction => {
   return (req, _res, next) => {
     const newLog = TOKEN_ENTRIES.reduce(
       (msg, [tk, fn]) => msg.replace(tk, RESET + fn(req) + RESET),

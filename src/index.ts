@@ -1,12 +1,13 @@
 import Request from "./Request";
 import Router from "./Router";
 import Server from "./Server";
-import { handlerFunction } from "./interfaces/handler";
+import { RouteParameters } from "./interfaces/RouteParameter";
+import { HandlerFunction } from "./interfaces/handler";
 import { publicFiles, Logger } from "./middlewares";
 
 const app = new Server();
 
-const authMiddleare: handlerFunction = (req, res, next) => {
+const authMiddleare: HandlerFunction = (req, res, next) => {
   const username = req.query.username;
   const password = req.query.password;
 
@@ -31,6 +32,10 @@ app.use(Logger(Logger.DEV));
 //! Not Optimized at all
 app.use(publicFiles("public", "media"));
 
+app.get("/hey/:user", (req, res) => {
+  req.params.user;
+});
+
 //@ Error Handling
 app.error((err, req, res) => {
   res.json({ err, message: "something went wrong" });
@@ -42,16 +47,13 @@ app.get("/error", (_q, _s, next) => {
 });
 
 //@ Support Generic Requests
-app.get(
-  "/generic",
-  (req: Request<{ hey: string }, {}, { search: string }>, res) => {
-    const hey = req.body.hey; //? Vaild Typescript
-    //? const yeh=req.body.yeh; (InVaild Typescript)
-    const search = req.query.search; //? Valid Typescript
-    //? const hcraes = req.query.hcraes (InValid Typescript)
-    return res.json({ hey, search });
-  }
-);
+app.get("/generic", (req, res) => {
+  const hey = req.body.hey; //? Vaild Typescript
+  //? const yeh=req.body.yeh; (InVaild Typescript)
+  const search = req.query.search; //? Valid Typescript
+  //? const hcraes = req.query.hcraes (InValid Typescript)
+  return res.json({ hey, search });
+});
 
 //@ Middleware like pattern
 app.get("/", (req, res, next) => {

@@ -1,7 +1,7 @@
 import getRawBody from "raw-body";
-import { handlerFunction } from "../interfaces/handler";
+import { HandlerFunction } from "../interfaces/handler";
 
-export const bodyParser: handlerFunction = async (req, _, next) => {
+export const bodyParser: HandlerFunction = async (req, _, next) => {
   const _bodyP = getRawBody(req.req);
   const rawBody = await _bodyP;
 
