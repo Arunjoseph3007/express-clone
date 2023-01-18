@@ -1,5 +1,5 @@
 import http, { IncomingMessage, ServerResponse } from "http";
-import Router from "./Router";
+import Router, { TDoc } from "./Router";
 import Request from "./Request";
 import Response from "./Response";
 import {
@@ -10,7 +10,7 @@ import {
   NextFunction,
 } from "./interfaces/handler";
 import { match, MatchResult } from "path-to-regexp";
-import { DOC, DOCS, docTemplate } from "./utils/docTemplate";
+import { docTemplate } from "./utils/docTemplate";
 import { ParamsDictionary } from "./interfaces/RouteParameter";
 
 export default class Server extends Router {
@@ -69,42 +69,39 @@ export default class Server extends Router {
     const allMatchedHandlers = this.findMatches(req);
 
     const next: NextFunction = async (err) => {
-      if (err) {
-        return await this.errorHandler(err, req, res);
-      }
       const match = allMatchedHandlers.shift();
 
-      if (match) {
-        const [handler, matchedObject] = match;
-        req.params = matchedObject.params as ParamsDictionary;
-        res.route = handler;
-        await handler.handler(req, res, next);
+      if (err || !match) {
+        return await this.errorHandler(err, req, res);
       }
+
+      const [handler, matchedObject] = match;
+      req.params = matchedObject.params as ParamsDictionary;
+      res.route = handler;
+      await handler.handler(req, res, next);
     };
 
     await next();
   }
 
-  private compileDoc(stack: typeof this.stack = this.stack): DOCS {
-    return stack
-      .filter((h) => h.isRouter || h.type == HandlerType.endpoint)
-      .map((h) =>
-        h.isRouter
-          ? { [h.path]: this.compileDoc(h.router.stack) }
-          : { method: h.method, path: h.path }
-      ) as DOCS;
-  }
-
   private doc() {
-    const paths = this.compileDoc();
+    const compiledDocs: Record<string, Array<TDoc>> = {};
+
+    this.docs.forEach((doc) => {
+      if (compiledDocs[doc.group]) {
+        compiledDocs[doc.group] = [...compiledDocs[doc.group], doc];
+      } else {
+        compiledDocs[doc.group] = [doc];
+      }
+    });
 
     this.handlers.push({
       path: "/doc",
       method: MethodType.GET,
       type: HandlerType.endpoint,
-      handler: (req, res) => {
+      handler: (_req, res) => {
         res.setHeader("Content-Type", "text/html");
-        res.write(docTemplate(paths));
+        res.write(docTemplate(compiledDocs));
         res.end();
       },
     });

@@ -15,9 +15,38 @@ interface HandlerController extends Handler {
   isRouter: false;
 }
 
+export interface TDoc extends Handler {
+  group: string;
+  type: HandlerType.endpoint;
+}
+
 export default class Router {
   stack: Array<HandlerController | RouterController> = [];
   protected handlers: Array<Handler> = [];
+  protected docs: Array<TDoc> = [];
+
+  private addDoc(doc: TDoc) {
+    this.docs.push(doc);
+  }
+
+  private addEndPointAndDocument(
+    path: string,
+    method: MethodType,
+    ...handlers: HandlerFunction[]
+  ) {
+    const type = HandlerType.endpoint;
+    handlers.forEach((handler) => {
+      this.addHandler({ path, method, handler, type });
+    });
+
+    this.addDoc({
+      path,
+      method,
+      type,
+      handler: handlers.pop() as HandlerFunction,
+      group: "/",
+    });
+  }
 
   addHandler(handler: Handler) {
     this.stack.push({ ...handler, isRouter: false });
@@ -25,6 +54,11 @@ export default class Router {
 
   addRouter(path: string, router: Router) {
     this.stack.push({ path, router, isRouter: true });
+
+    router.docs.forEach((doc) =>
+      this.addDoc({ ...doc, group: path + doc.group })
+    );
+    return this;
   }
 
   use(middleware: HandlerFunction) {
@@ -38,80 +72,37 @@ export default class Router {
     return this;
   }
 
-  all(path: string, ...handlers: HandlerFunction[]) {
-    handlers.forEach((handler) => {
-      this.addHandler({
-        path,
-        handler,
-        method: MethodType.ALL,
-        type: HandlerType.endpoint,
-      });
-    });
+  all(path: string, ...handlers: Array<HandlerFunction>) {
+    this.addEndPointAndDocument(path, MethodType.ALL, ...handlers);
+    return this;
+  }
+
+  get(path: string, ...handlers: Array<HandlerFunction>) {
+    this.addEndPointAndDocument(path, MethodType.GET, ...handlers);
 
     return this;
   }
 
-  get<T extends string>(path: T, ...handlers: Array<HandlerFunction>) {
-    handlers.forEach((handler) => {
-      this.addHandler({
-        path,
-        handler,
-        method: MethodType.GET,
-        type: HandlerType.endpoint,
-      });
-    });
+  post(path: string, ...handlers: Array<HandlerFunction>) {
+    this.addEndPointAndDocument(path, MethodType.POST, ...handlers);
 
     return this;
   }
 
-  post(path: string, ...handlers: HandlerFunction[]) {
-    handlers.forEach((handler) => {
-      this.addHandler({
-        path,
-        handler,
-        method: MethodType.POST,
-        type: HandlerType.endpoint,
-      });
-    });
+  put(path: string, ...handlers: Array<HandlerFunction>) {
+    this.addEndPointAndDocument(path, MethodType.PUT, ...handlers);
 
     return this;
   }
 
-  put(path: string, ...handlers: HandlerFunction[]) {
-    handlers.forEach((handler) => {
-      this.addHandler({
-        path,
-        handler,
-        method: MethodType.PUT,
-        type: HandlerType.endpoint,
-      });
-    });
+  patch(path: string, ...handlers: Array<HandlerFunction>) {
+    this.addEndPointAndDocument(path, MethodType.PATCH, ...handlers);
 
     return this;
   }
 
-  patch(path: string, ...handlers: HandlerFunction[]) {
-    handlers.forEach((handler) => {
-      this.addHandler({
-        path,
-        handler,
-        method: MethodType.PATCH,
-        type: HandlerType.endpoint,
-      });
-    });
-
-    return this;
-  }
-
-  delete(path: string, ...handlers: HandlerFunction[]) {
-    handlers.forEach((handler) => {
-      this.addHandler({
-        path,
-        handler,
-        method: MethodType.DELETE,
-        type: HandlerType.endpoint,
-      });
-    });
+  delete(path: string, ...handlers: Array<HandlerFunction>) {
+    this.addEndPointAndDocument(path, MethodType.DELETE, ...handlers);
 
     return this;
   }
