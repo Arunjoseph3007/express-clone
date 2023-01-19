@@ -4,6 +4,7 @@ import {
   MethodType,
   HandlerFunction,
 } from "./interfaces/handler";
+import { z, ZodSchema } from "zod";
 
 interface RouterController {
   path: string;
@@ -18,6 +19,12 @@ interface HandlerController extends Handler {
 export interface TDoc extends Handler {
   group: string;
   type: HandlerType.endpoint;
+}
+
+export interface TRPC {
+  inp?: (p: typeof z) => ZodSchema;
+  out?: (p: typeof z) => ZodSchema;
+  handler: HandlerFunction;
 }
 
 export default class Router {
@@ -69,6 +76,29 @@ export default class Router {
       type: HandlerType.middleware,
     });
 
+    return this;
+  }
+
+  rpc(
+    path: string,
+    { inp = (z) => z.any(), out = (z) => z.any(), handler }: TRPC
+  ) {
+    const inSchema = inp(z);
+    const outSchema = out(z);
+
+    const typeSafeHandler: HandlerFunction = (req, res, next) => {
+      try {
+        inSchema.parse(req.body);
+        const result = handler(req, res, next);
+        outSchema.parse(result);
+
+        res.status(200).json(result);
+      } catch (e) {
+        next(e);
+      }
+    };
+
+    this.addEndPointAndDocument(path, MethodType.POST, typeSafeHandler);
     return this;
   }
 

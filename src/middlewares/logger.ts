@@ -10,8 +10,8 @@ const RED_FG = "\x1b[31m";
 const MAGENTA_FG = "\x1b[35m";
 const CYAN_FG = "\x1b[36m";
 
-export const Logger = (logPattern: string): HandlerFunction => {
-  return (req, _res, next) => {
+export const Logger = function (logPattern: string): HandlerFunction {
+  return function (req, _res, next) {
     const sTime = now();
 
     const logRequest = (err: Error | null, res: ServerResponse) => {
@@ -42,17 +42,16 @@ Logger.LONG =
   "[<now>] <method> <status> <status-message> <content-length> <url>" as const;
 Logger.SHORT = "<method> <status> <url>" as const;
 
-const reset = (str: string) => RESET + (str || "-") + RESET;
+const reset = (str: string = "-") => RESET + str + RESET;
 
 const now = () => performance.now();
 
 const colorCodeStatus = (no: number) => {
-  let color: string = "";
+  let color: string = BLUE_FG;
   const firstLetter = no.toString().slice(0, 1);
 
-  if (firstLetter == "1") color = BLUE_FG;
   if (firstLetter == "2") color = GREEN_FG;
-  if (firstLetter == "3") color = GREEN_FG;
+  if (firstLetter == "3") color = BLUE_FG;
   if (firstLetter == "4") color = RED_FG;
   if (firstLetter == "5") color = RED_FG;
 

@@ -39,6 +39,22 @@ app.error((err, req, res) => {
   res.status(404).json({ err, message: "something went wrong" });
 });
 
+app.rpc("/rpcEndpoint", {
+  inp: (z) =>
+    z.object({
+      username: z.string().min(8),
+      password: z.string().min(8),
+    }),
+  out: (z) =>
+    z.object({
+      username: z.string().min(8),
+      id: z.string(),
+    }),
+  handler: (req, res) => {
+    return { username: "works perfectly", id: "123445" };
+  },
+});
+
 //@ Delay
 app.get("/delay", (req, res) => {
   setTimeout(() => res.json({ msg: "too late" }), 100);

@@ -26,6 +26,7 @@
     "path-to-regexp": "^6.2.1",
     "raw-body": "^2.5.1",
     "send": "0.18.0",
-    "swagger-ui-dist": "^4.15.5"
+    "swagger-ui-dist": "^4.15.5",
+    "zod": "^3.20.2"
   }
 }
