@@ -36,7 +36,12 @@ app.get("/hey/:user", (req, res) => {
 
 //@ Error Handling
 app.error((err, req, res) => {
-  res.json({ err, message: "something went wrong" });
+  res.status(404).json({ err, message: "something went wrong" });
+});
+
+//@ Delay
+app.get("/delay", (req, res) => {
+  setTimeout(() => res.json({ msg: "too late" }), 100);
 });
 
 //@ Error handleing

@@ -13,6 +13,7 @@
   "devDependencies": {
     "@types/content-disposition": "^0.5.5",
     "@types/node": "^18.11.18",
+    "@types/on-finished": "^2.3.1",
     "@types/send": "^0.17.1",
     "@types/swagger-ui-dist": "^3.30.1",
     "nodemon": "^2.0.20",
@@ -21,6 +22,7 @@
   },
   "dependencies": {
     "content-disposition": "^0.5.4",
+    "on-finished": "^2.4.1",
     "path-to-regexp": "^6.2.1",
     "raw-body": "^2.5.1",
     "send": "0.18.0",

@@ -1,5 +1,6 @@
-import Request from "../Request";
+import { ServerResponse } from "http";
 import { HandlerFunction } from "../interfaces/handler";
+import onFinished from "on-finished";
 
 const RESET = "\x1b[0m";
 const BLUE_FG = "\x1b[36m";
@@ -9,34 +10,63 @@ const RED_FG = "\x1b[31m";
 const MAGENTA_FG = "\x1b[35m";
 const CYAN_FG = "\x1b[36m";
 
-const TOKENS = new Map<string, (req: Request) => string>([
-  ["<time>", () => BLUE_FG + new Date().toTimeString().slice(0, 8)],
-  ["<url>", (req) => YELLOW_FG + req.url],
-  ["<method>", (req) => GREEN_FG + req.method],
-  ["<status>", (req) => MAGENTA_FG + req.req.statusCode],
-  ["<status-code>", (req) => MAGENTA_FG + req.req.statusCode],
-  ["<status-message>", (req) => CYAN_FG + req.req.statusMessage],
-  ["<content-length>", (req) => RED_FG + req.req.headers["content-length"]],
-]);
-
-const TOKEN_ENTRIES = [...TOKENS.entries()];
-
 export const Logger = (logPattern: string): HandlerFunction => {
   return (req, _res, next) => {
-    const newLog = TOKEN_ENTRIES.reduce(
-      (msg, [tk, fn]) => msg.replace(tk, RESET + fn(req) + RESET),
-      logPattern
-    );
+    const sTime = now();
 
-    console.log(newLog);
+    const logRequest = (err: Error | null, res: ServerResponse) => {
+      const logMessage = logPattern
+        .replace("<now>", reset(BLUE_FG + sTime))
+        .replace("<url>", reset(YELLOW_FG + String(res.req.url)))
+        .replace("<method>", reset(GREEN_FG + res.req.method))
+        .replace("<status>", colorCodeStatus(res.statusCode))
+        .replace("<status-code>", colorCodeStatus(res.statusCode))
+        .replace("<status-message>", reset(CYAN_FG + res.statusMessage))
+        .replace("<response-time>", colorCodeResponse(sTime))
+        .replace("<time>", colorCodeResponse(sTime));
+
+      if (!err) {
+        console.log(logMessage);
+      } else {
+        console.log(RESET + RED_FG + err + RESET);
+      }
+    };
+
+    onFinished(_res.res, logRequest);
     next();
   };
 };
 
-Logger.DEV = "<time>  <method>  <url>" as const;
+Logger.DEV = "<method>  <status>  <response-time>  <url>" as const;
 Logger.LONG =
-  "<time> <method> <status> <status-message> <content-length> <url>" as const;
-Logger.SHORT = "<method>  <url>" as const;
+  "[<now>] <method> <status> <status-message> <content-length> <url>" as const;
+Logger.SHORT = "<method> <status> <url>" as const;
 
+const reset = (str: string) => RESET + (str || "-") + RESET;
 
-// User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36
+const now = () => performance.now();
+
+const colorCodeStatus = (no: number) => {
+  let color: string = "";
+  const firstLetter = no.toString().slice(0, 1);
+
+  if (firstLetter == "1") color = BLUE_FG;
+  if (firstLetter == "2") color = GREEN_FG;
+  if (firstLetter == "3") color = GREEN_FG;
+  if (firstLetter == "4") color = RED_FG;
+  if (firstLetter == "5") color = RED_FG;
+
+  return reset(color + no);
+};
+
+const colorCodeResponse = (start: number) => {
+  let diff = now() - start;
+  let color = GREEN_FG + "  ";
+
+  if (diff > 5) color = YELLOW_FG + "  ";
+  if (diff > 10) color = BLUE_FG + " ";
+  if (diff > 25) color = MAGENTA_FG + " ";
+  if (diff > 100) color = RED_FG;
+
+  return reset(color + diff.toFixed(4) + "ms");
+};
