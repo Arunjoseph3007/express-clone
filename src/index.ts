@@ -1,7 +1,5 @@
-import Request from "./Request";
 import Router from "./Router";
 import Server from "./Server";
-import { RouteParameters } from "./interfaces/RouteParameter";
 import { HandlerFunction } from "./interfaces/handler";
 import { publicFiles, Logger } from "./middlewares";
 

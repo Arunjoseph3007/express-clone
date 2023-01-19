@@ -48,8 +48,8 @@ export default class Server extends Router {
 
   private findMatches(req: Request): Array<[Handler, MatchResult]> {
     return this.handlers
-      .map((h) => [h, this.match(h, req)])
-      .filter((h) => Boolean(h[1])) as Array<[Handler, MatchResult]>;
+      .map((h) => [h, this.match(h, req)] as const)
+      .filter((h) => h[1]) as Array<[Handler, MatchResult]>;
   }
 
   private match(handler: Handler, req: Request) {
@@ -78,7 +78,7 @@ export default class Server extends Router {
       const [handler, matchedObject] = match;
       req.params = matchedObject.params as ParamsDictionary;
       res.route = handler;
-      await handler.handler(req, res, next);
+      return await handler.handler(req, res, next);
     };
 
     await next();
@@ -94,6 +94,14 @@ export default class Server extends Router {
         compiledDocs[doc.group] = [doc];
       }
     });
+
+    const newCompiled = this.docs.reduce<Record<string, Array<TDoc>>>(
+      (ac, doc) => ({
+        ...ac,
+        [doc.group]: ac[doc.group] ? [...ac[doc.group], doc] : [doc],
+      }),
+      {}
+    );
 
     this.handlers.push({
       path: "/doc",

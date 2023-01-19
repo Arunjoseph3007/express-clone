@@ -56,7 +56,7 @@ export default class Router {
     this.stack.push({ path, router, isRouter: true });
 
     router.docs.forEach((doc) =>
-      this.addDoc({ ...doc, group: path + doc.group })
+      this.addDoc({ ...doc, group: path + doc.group, path: path + doc.path })
     );
     return this;
   }
