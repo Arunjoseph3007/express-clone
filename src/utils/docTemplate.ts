@@ -1,7 +1,10 @@
 import fs from "fs";
 import { TDoc } from "../Router";
+import path from "path";
 
-const TMP = fs.readFileSync("src/templates/doc.html").toString();
+const TMP = fs
+  .readFileSync(path.join(__dirname, "../../public/templates/doc.html"))
+  .toString();
 
 export const docTemplate = (docs: Record<string, Array<TDoc>>) => {
   return TMP.replace("<% doc %>", docify(Object.entries(docs)));

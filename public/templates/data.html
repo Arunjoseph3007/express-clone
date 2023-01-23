@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../../public/prism.css" />
+    <!-- <link rel="stylesheet" href="../public/prism.css" /> -->
     <title>My Express Clone</title>
   </head>
   <body>
@@ -29,7 +29,7 @@
         <pre><code class="language-json"><% data %></code></pre>
       </div>
     </main>
-    <script src="../../public/prism.js"></script>
+    <% prism-js %>
   </body>
   <style>
     *,
@@ -84,5 +84,7 @@
     .details {
       font-size: 0.9rem;
     }
-  </style>
+
+    </style>
+    <% prism-css %>
 </html>

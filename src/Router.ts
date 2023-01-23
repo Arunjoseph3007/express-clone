@@ -3,29 +3,11 @@ import {
   HandlerType,
   MethodType,
   HandlerFunction,
+  NextFunction,
 } from "./interfaces/handler";
-import { z, ZodSchema } from "zod";
-
-interface RouterController {
-  path: string;
-  router: Router;
-  isRouter: true;
-}
-
-interface HandlerController extends Handler {
-  isRouter: false;
-}
-
-export interface TDoc extends Handler {
-  group: string;
-  type: HandlerType.endpoint;
-}
-
-export interface TRPC {
-  inp?: (p: typeof z) => ZodSchema;
-  out?: (p: typeof z) => ZodSchema;
-  handler: HandlerFunction;
-}
+import { z } from "zod";
+import Request from "./Request";
+import Response from "./Response";
 
 export default class Router {
   stack: Array<HandlerController | RouterController> = [];
@@ -79,18 +61,12 @@ export default class Router {
     return this;
   }
 
-  rpc(
-    path: string,
-    { inp = (z) => z.any(), out = (z) => z.any(), handler }: TRPC
-  ) {
-    const inSchema = inp(z);
-    const outSchema = out(z);
-
+  rpc(path: string, { inp = z.any(), out = z.any(), handler }: TRPC) {
     const typeSafeHandler: HandlerFunction = (req, res, next) => {
       try {
-        inSchema.parse(req.body);
+        inp.parse(req.body);
         const result = handler(req, res, next);
-        outSchema.parse(result);
+        out.parse(result);
 
         res.status(200).json(result);
       } catch (e) {
@@ -156,4 +132,25 @@ export default class Router {
 
     return this;
   }
+}
+
+interface RouterController {
+  path: string;
+  router: Router;
+  isRouter: true;
+}
+
+interface HandlerController extends Handler {
+  isRouter: false;
+}
+
+export interface TDoc extends Handler {
+  group: string;
+  type: HandlerType.endpoint;
+}
+
+export interface TRPC {
+  inp: z.ZodTypeAny;
+  out: z.ZodTypeAny;
+  handler: (req: Request, res: Response, next: NextFunction) => void;
 }

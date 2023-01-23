@@ -1,7 +1,18 @@
 import Response from "../Response";
 import fs from "fs";
+import path from "path";
 
-const TMP = fs.readFileSync("src/templates/data.html").toString();
+const TMP = fs
+  .readFileSync(path.join(__dirname, "../../public/templates/data.html"))
+  .toString();
+
+const PRISM_CSS = fs
+  .readFileSync(path.join(__dirname, "../../public/prism.css"))
+  .toString();
+
+const PRISM_JS = fs
+  .readFileSync(path.join(__dirname, "../../public/prism.js"))
+  .toString();
 
 export const htmlTemplate = (res: Response, data: any) => {
   return TMP.replace("<% data %>", JSON.stringify(JSON.parse(data), null, 4))
@@ -11,5 +22,7 @@ export const htmlTemplate = (res: Response, data: any) => {
     .replace(
       "<% route %>",
       String(res.route?.method) + " " + String(res.route?.path)
-    );
+    )
+    .replace("<% prism-css %>", "<style>" + PRISM_CSS + "</style>")
+    .replace("<% prism-js %>", "<script>" + PRISM_JS + "</script>");
 };
