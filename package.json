@@ -1,8 +1,23 @@
 {
   "name": "spress",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "dist/index.js",
   "license": "MIT",
+  "author": "Arun Joseph",
+  "repository": "Arunjoseph3007/spress",
+  "homepage": "https://github.com/Arunjoseph3007/spress",
+  "keywords": [
+    "express",
+    "framework",
+    "sinatra",
+    "web",
+    "http",
+    "rest",
+    "restful",
+    "router",
+    "app",
+    "api"
+  ],
   "scripts": {
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
