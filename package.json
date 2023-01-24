@@ -2,6 +2,8 @@
   "name": "spress",
   "version": "0.1.1",
   "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "./index.d.ts",
   "license": "MIT",
   "author": "Arun Joseph",
   "repository": "Arunjoseph3007/spress",
