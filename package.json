@@ -8,8 +8,7 @@
   "repository": "Arunjoseph3007/spress",
   "files": [
     "dist",
-    "public",
-    "index.d.ts"
+    "public"
   ],
   "homepage": "https://github.com/Arunjoseph3007/spress",
   "keywords": [
