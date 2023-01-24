@@ -3,10 +3,14 @@
   "version": "0.1.1",
   "main": "dist/index.js",
   "module": "dist/index.js",
-  "types": "./index.d.ts",
   "license": "MIT",
   "author": "Arun Joseph",
   "repository": "Arunjoseph3007/spress",
+  "files": [
+    "dist",
+    "public",
+    "index.d.ts"
+  ],
   "homepage": "https://github.com/Arunjoseph3007/spress",
   "keywords": [
     "express",

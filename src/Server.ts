@@ -13,6 +13,10 @@ import { match, MatchResult } from "path-to-regexp";
 import { docTemplate } from "./utils/docTemplate";
 import { ParamsDictionary } from "./interfaces/RouteParameter";
 
+
+/**
+ * Main Server class. You can create a server by using an instance
+ */
 export default class Server extends Router {
   private server?: http.Server;
   private isListening: boolean = false;
@@ -20,6 +24,12 @@ export default class Server extends Router {
     return res.status(400).json({ err, message: "Something went wrong" });
   };
 
+  /**
+   * Sets up your server for listening on a given port
+   * @param port Port where you want your server to be
+   * @param callback This will be run after the server started
+   * @returns
+   */
   listen(port: number, callback?: () => void) {
     if (this.isListening) {
       console.log("Server Already running");
@@ -33,6 +43,9 @@ export default class Server extends Router {
     this.server.listen(port, callback);
   }
 
+  /**
+   * To close your server gracefully
+   */
   shutdown() {
     if (this.isListening) {
       this.server?.close();
@@ -41,6 +54,11 @@ export default class Server extends Router {
     }
   }
 
+  /**
+   * Utility method To setup custom error handling
+   * @param cb The custom error handler that you provide
+   * @returns 
+   */
   error(cb: ErrorHandler) {
     this.errorHandler = cb;
     return this;
@@ -94,14 +112,6 @@ export default class Server extends Router {
         compiledDocs[doc.group] = [doc];
       }
     });
-
-    const newCompiled = this.docs.reduce<Record<string, Array<TDoc>>>(
-      (ac, doc) => ({
-        ...ac,
-        [doc.group]: ac[doc.group] ? [...ac[doc.group], doc] : [doc],
-      }),
-      {}
-    );
 
     this.handlers.push({
       path: "/doc",
