@@ -24,5 +24,7 @@ export const htmlTemplate = (res: Response, data: any) => {
       String(res.route?.method) + " " + String(res.route?.path)
     )
     .replace("<% prism-css %>", "<style>" + PRISM_CSS + "</style>")
-    .replace("<% prism-js %>", "<script>" + PRISM_JS + "</script>");
+    .replace("<% prism-js %>", "<script>" + PRISM_JS + "</script>")
+    .replace("<% app-name %>", res.app?.name || "Spress App")
+    .replace("<% app-name %>", res.app?.name || "Spress App");
 };

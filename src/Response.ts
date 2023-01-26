@@ -3,6 +3,7 @@ import send from "send";
 import contentDisposition from "content-disposition";
 import { htmlTemplate } from "./utils/htmlTemplate";
 import { Handler } from "./interfaces/handler";
+import Server from "./Server";
 
 /**
  * A wrapper around the `http.ServerResponse`
@@ -11,6 +12,7 @@ export default class Response {
   public res: ServerResponse;
   public isBrowserRequest: boolean;
   public route?: Handler;
+  public app?: Server;
 
   constructor(res: ServerResponse) {
     this.res = res;
@@ -44,7 +46,7 @@ export default class Response {
    * Send anything as response
    * @param message The content you want to send
    * @param cb Error handler (if anything goes wrong)
-   * @returns 
+   * @returns
    */
   write(message: any, cb?: (error: Error | null | undefined) => void) {
     this.res.write(message, cb);
@@ -54,7 +56,7 @@ export default class Response {
   /**
    * End the response and return once called nothing can be send to the client
    * @param cb
-   * @returns 
+   * @returns
    */
   end(cb?: () => void) {
     this.res.end(cb);
@@ -62,11 +64,11 @@ export default class Response {
   }
 
   /**
-   * Send the provided message and end the response. 
+   * Send the provided message and end the response.
    * Also auto detects if the client is browser and nicely formats the output
    * @param message Content to be sent
-   * @param cb 
-   * @returns 
+   * @param cb
+   * @returns
    */
   send(message: any, cb?: (error: Error | null | undefined) => void) {
     if (this.isBrowserRequest) {
@@ -82,7 +84,7 @@ export default class Response {
   /**
    * Set statuscode of the response
    * @param statusCode The status code
-   * @returns 
+   * @returns
    */
   status(statusCode: number) {
     this.res.statusCode = statusCode;
@@ -91,10 +93,10 @@ export default class Response {
 
   /**
    * Set status and optionally write some response geaders
-   * @param statusCode 
-   * @param statusMessage 
-   * @param headers 
-   * @returns 
+   * @param statusCode
+   * @param statusMessage
+   * @param headers
+   * @returns
    */
   writeHead(
     statusCode: number,
@@ -108,8 +110,8 @@ export default class Response {
   /**
    * Pipe any stream data to the client
    * @param dest A stream to you want to pipe
-   * @param opt 
-   * @returns 
+   * @param opt
+   * @returns
    */
   pipe(dest: NodeJS.WritableStream, opt?: { end?: boolean }) {
     return this.res.pipe(dest, opt);
@@ -117,8 +119,8 @@ export default class Response {
 
   /**
    * Return data as JSON
-   * @param data 
-   * @returns 
+   * @param data
+   * @returns
    */
   json(data: any) {
     this.set("content-type", "application/json");
@@ -128,8 +130,8 @@ export default class Response {
 
   /**
    * Utility to send json and set status success
-   * @param data 
-   * @returns 
+   * @param data
+   * @returns
    */
   success(data: any) {
     this.status(200).json(data);
@@ -140,7 +142,7 @@ export default class Response {
    * Send any files to the client
    * @param path Path of the file to be sent
    * @param options Any options
-   * @returns 
+   * @returns
    */
   sendFile(path: string, options?: send.SendOptions) {
     const file = send(this.res.req, encodeURI(path), options);
@@ -151,8 +153,8 @@ export default class Response {
   /**
    * Send and download any file to the client
    * @param filePath Path to the file to be downloaded
-   * @param options 
-   * @returns 
+   * @param options
+   * @returns
    */
   download(filePath: string, options?: send.SendOptions) {
     this.setHeader("content-disposition", contentDisposition(filePath));

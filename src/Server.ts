@@ -13,16 +13,23 @@ import { match, MatchResult } from "path-to-regexp";
 import { docTemplate } from "./utils/docTemplate";
 import { ParamsDictionary } from "./interfaces/RouteParameter";
 
-
 /**
  * Main Server class. You can create a server by using an instance
  */
 export default class Server extends Router {
+  public name: string;
+  private port: number | undefined;
   private server?: http.Server;
   private isListening: boolean = false;
   private errorHandler: ErrorHandler = (err, req, res) => {
     return res.status(400).json({ err, message: "Something went wrong" });
   };
+
+  constructor(name: string = "Spress App", port?: number) {
+    super();
+    this.name = name;
+    this.port = port;
+  }
 
   /**
    * Sets up your server for listening on a given port
@@ -30,7 +37,7 @@ export default class Server extends Router {
    * @param callback This will be run after the server started
    * @returns
    */
-  listen(port: number, callback?: () => void) {
+  listen(port: number = this.port as number, callback?: () => void) {
     if (this.isListening) {
       console.log("Server Already running");
       return;
@@ -40,7 +47,19 @@ export default class Server extends Router {
     this.compileHandlers();
     this.doc();
     this.server = http.createServer(this.handle.bind(this));
-    this.server.listen(port, callback);
+    this.server.listen(port, () => {
+      console.log(
+        "\x1b[0m" + "\x1b[36m" + "`" + this.name + "`",
+        "\x1b[0m" +
+          " is starting at port " +
+          "\x1b[0m" +
+          "\x1b[36m" +
+          "`" +
+          port +
+          "`"
+      );
+      callback && callback();
+    });
   }
 
   /**
@@ -57,7 +76,7 @@ export default class Server extends Router {
   /**
    * Utility method To setup custom error handling
    * @param cb The custom error handler that you provide
-   * @returns 
+   * @returns
    */
   error(cb: ErrorHandler) {
     this.errorHandler = cb;
@@ -83,6 +102,8 @@ export default class Server extends Router {
     const req = new Request(q);
     const res = new Response(s);
     await req.init();
+    res.app = this;
+    req.app = this;
 
     const allMatchedHandlers = this.findMatches(req);
 
@@ -96,6 +117,7 @@ export default class Server extends Router {
       const [handler, matchedObject] = match;
       req.params = matchedObject.params as ParamsDictionary;
       res.route = handler;
+
       return await handler.handler(req, res, next);
     };
 

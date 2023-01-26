@@ -2,6 +2,7 @@ import { IncomingHttpHeaders, IncomingMessage } from "http";
 import getRawBody from "raw-body";
 import { parseCookie } from "./utils/parseCookies";
 import { ParamsDictionary } from "./interfaces/RouteParameter";
+import Server from "./Server";
 
 export default class Request<
   TParam extends ParamsDictionary = ParamsDictionary,
@@ -18,6 +19,7 @@ export default class Request<
   public headers: IncomingHttpHeaders;
   public body: TBody;
   public cookies: Record<string, string>;
+  public app?: Server;
 
   constructor(req: IncomingMessage) {
     const url = new URL(req.url || "", `http://${req.headers.host}`);
