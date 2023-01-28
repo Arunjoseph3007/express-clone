@@ -12,6 +12,14 @@ import {
 import { match, MatchResult } from "path-to-regexp";
 import { docTemplate } from "./utils/docTemplate";
 import { ParamsDictionary } from "./interfaces/RouteParameter";
+import { getAbsoluteFSPath as getSwagger } from "swagger-ui-dist";
+import { readdirSync } from "fs";
+import {
+  DEAFAULT_SWAGGER_OPTS,
+  SWAGGER_INIT_JS_TMPL,
+  generateHTML,
+  swaggerStringify,
+} from "./utils/swagger";
 
 /**
  * Main Server class. You can create a server by using an instance
@@ -44,19 +52,17 @@ export default class Server extends Router {
     }
 
     this.isListening = true;
+    this.swagger();
     this.compileHandlers();
     this.doc();
     this.server = http.createServer(this.handle.bind(this));
     this.server.listen(port, () => {
       console.log(
-        "\x1b[0m" + "\x1b[36m" + "`" + this.name + "`",
-        "\x1b[0m" +
-          " is starting at port " +
-          "\x1b[0m" +
-          "\x1b[36m" +
-          "`" +
+        "\x1b[0m\x1b[36m`" +
+          this.name +
+          "`\x1b[0m is starting at port \x1b[0m\x1b[36m`" +
           port +
-          "`"
+          "`\x1b[0m"
       );
       callback && callback();
     });
@@ -143,6 +149,41 @@ export default class Server extends Router {
         res.setHeader("Content-Type", "text/html");
         res.write(docTemplate(compiledDocs));
         res.end();
+      },
+    });
+  }
+
+  private async swagger() {
+    const opts = DEAFAULT_SWAGGER_OPTS;
+    const swaggerRoot = getSwagger();
+    const swaggerFiles = readdirSync(swaggerRoot).map((a) => "/" + a);
+    const swaggerHtml = generateHTML();
+    const initOptions = { swaggerDoc: opts };
+    const stringDocs = swaggerStringify(initOptions);
+    const content = SWAGGER_INIT_JS_TMPL.replace(
+      "<% swaggerOptions %>",
+      stringDocs
+    );
+
+    this.use((req, res, next) => {
+      if (req.url == "/swagger-ui-init.js") {
+        res.set("Content-Type", "application/javascript");
+        res.write(content);
+        return res.end();
+      } else if (swaggerFiles.includes(req.url)) {
+        return res.sendFile(swaggerRoot + req.url);
+      }
+      next();
+    });
+
+    this.addHandler({
+      path: "/swagger",
+      method: MethodType.GET,
+      type: HandlerType.endpoint,
+      handler: (req, res) => {
+        res.set("Content-Type", "text/html");
+        res.write(swaggerHtml);
+        return res.end();
       },
     });
   }

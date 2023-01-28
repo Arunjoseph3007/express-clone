@@ -15,16 +15,22 @@ const PRISM_JS = fs
   .toString();
 
 export const htmlTemplate = (res: Response, data: any) => {
-  return TMP.replace("<% data %>", JSON.stringify(JSON.parse(data), null, 4))
-    .replace("<% url %>", String(res.res.req.url))
-    .replace("<% method %>", String(res.res.req.method))
-    .replace("<% status %>", String(res.res.statusCode))
-    .replace(
-      "<% route %>",
-      String(res.route?.method) + " " + String(res.route?.path)
-    )
-    .replace("<% prism-css %>", "<style>" + PRISM_CSS + "</style>")
-    .replace("<% prism-js %>", "<script>" + PRISM_JS + "</script>")
-    .replace("<% app-name %>", res.app?.name || "Spress App")
-    .replace("<% app-name %>", res.app?.name || "Spress App");
+  const jsonData = JSON.stringify(JSON.parse(data), null, 4);
+  const route = String(res.route?.method) + " " + String(res.route?.path);
+  const method = String(res.res.req.method);
+  const url = String(res.res.req.url);
+  const status = String(res.res.statusCode);
+  const prismCss = "<style>" + PRISM_CSS + "</style>";
+  const prismJs = "<script>" + PRISM_JS + "</script>";
+  const appName = res.app?.name || "Spress App";
+
+  return TMP.replace("<% data %>", jsonData)
+    .replace("<% url %>", url)
+    .replace("<% method %>", method)
+    .replace("<% status %>", status)
+    .replace("<% route %>", route)
+    .replace("<% prism-css %>", prismCss)
+    .replace("<% prism-js %>", prismJs)
+    .replace("<% app-name %>", appName)
+    .replace("<% app-name %>", appName);
 };
