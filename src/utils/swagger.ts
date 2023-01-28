@@ -1,4 +1,4 @@
-export const swaggerStringify = (obj: any) => {
+export const stringify = (obj: any) => {
   const placeholder = "____FUNCTIONPLACEHOLDER____";
   const fns: Function[] = [];
   let json = JSON.stringify(
@@ -44,7 +44,7 @@ const favIconHtml =
   '<link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />' +
   '<link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />';
 
-export const SWAGGER_INIT_JS_TMPL = `
+export const JS_TMPL = `
 window.onload = function() {
   // Build a system
   var url = window.location.search.match(/url=([^&]+)/);
@@ -87,7 +87,7 @@ window.onload = function() {
 }
 `;
 
-export const SWAGGER_INIT_HTML_TMPL = `
+export const HTML_TMPL = `
 <!-- HTML for static distribution bundle build -->
 <!DOCTYPE html>
 <html lang="en">
@@ -155,7 +155,7 @@ export const SWAGGER_INIT_HTML_TMPL = `
 </html>
 `;
 
-export const DEAFAULT_SWAGGER_OPTS = {
+export const DEFAULT_OPTS = {
   swagger: "2.0",
   info: {
     title: "Express Typescript starter",
@@ -415,7 +415,6 @@ export const DEAFAULT_SWAGGER_OPTS = {
 };
 
 export const generateHTML = function (
-  swaggerDoc?: any,
   opts?: any,
   options?: any,
   customCss?: any,
@@ -452,39 +451,22 @@ export const generateHTML = function (
   customCss = explorerString + " " + customCss || explorerString;
   customfavIcon = customfavIcon || false;
   customSiteTitle = customSiteTitle || "Swagger UI";
-  _htmlTplString = _htmlTplString || SWAGGER_INIT_HTML_TMPL;
-  _jsTplString = _jsTplString || SWAGGER_INIT_JS_TMPL;
+  _htmlTplString = _htmlTplString || HTML_TMPL;
+  _jsTplString = _jsTplString || JS_TMPL;
 
   var favIconString = customfavIcon
     ? '<link rel="icon" href="' + customfavIcon + '" />'
     : favIconHtml;
 
-  var htmlWithCustomCss = _htmlTplString
+  return _htmlTplString
     .toString()
-    .replace("<% customCss %>", customCss);
-  var htmlWithFavIcon = htmlWithCustomCss.replace(
-    "<% favIconString %>",
-    favIconString
-  );
-  var htmlWithCustomJsUrl = htmlWithFavIcon.replace(
-    "<% customJs %>",
-    toTags(customJs, toExternalScriptTag)
-  );
-  var htmlWithCustomJs = htmlWithCustomJsUrl.replace(
-    "<% customJsStr %>",
-    toTags(customJsStr, toInlineScriptTag)
-  );
-  var htmlWithCustomCssUrl = htmlWithCustomJs.replace(
-    "<% customCssUrl %>",
-    toTags(customCssUrl, toExternalStylesheetTag)
-  );
-
-  var initOptions = {
-    swaggerDoc: swaggerDoc || undefined,
-    customOptions: options,
-    swaggerUrl: swaggerUrl || undefined,
-    swaggerUrls: swaggerUrls || undefined,
-  };
-
-  return htmlWithCustomCssUrl.replace("<% title %>", customSiteTitle);
+    .replace("<% customCss %>", customCss)
+    .replace("<% favIconString %>", favIconString)
+    .replace("<% customJs %>", toTags(customJs, toExternalScriptTag))
+    .replace("<% customJsStr %>", toTags(customJsStr, toInlineScriptTag))
+    .replace(
+      "<% customCssUrl %>",
+      toTags(customCssUrl, toExternalStylesheetTag)
+    )
+    .replace("<% title %>", customSiteTitle);
 };

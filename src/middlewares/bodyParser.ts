@@ -14,5 +14,6 @@ export const bodyParser: HandlerFunction = async (req, _, next) => {
   } catch (error) {
     console.log("Could parse body");
   }
+  
   next();
 };

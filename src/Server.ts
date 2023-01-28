@@ -14,18 +14,16 @@ import { docTemplate } from "./utils/docTemplate";
 import { ParamsDictionary } from "./interfaces/RouteParameter";
 import { getAbsoluteFSPath as getSwagger } from "swagger-ui-dist";
 import { readdirSync } from "fs";
-import {
-  DEAFAULT_SWAGGER_OPTS,
-  SWAGGER_INIT_JS_TMPL,
-  generateHTML,
-  swaggerStringify,
-} from "./utils/swagger";
+import * as swagger from "./utils/swagger";
 
 /**
  * Main Server class. You can create a server by using an instance
  */
 export default class Server extends Router {
   public name: string;
+  public version: string;
+  public description: string;
+  public host: string;
   private port: number | undefined;
   private server?: http.Server;
   private isListening: boolean = false;
@@ -33,10 +31,19 @@ export default class Server extends Router {
     return res.status(400).json({ err, message: "Something went wrong" });
   };
 
-  constructor(name: string = "Spress App", port?: number) {
+  constructor(options?: {
+    name?: string;
+    port?: number;
+    description?: string;
+    version?: string;
+    host?: string;
+  }) {
     super();
-    this.name = name;
-    this.port = port;
+    this.name = options?.name || "Spress App";
+    this.port = options?.port;
+    this.description = options?.description || "";
+    this.version = options?.version || "1.0.0";
+    this.host = options?.host || "0.0.0.0";
   }
 
   /**
@@ -154,16 +161,18 @@ export default class Server extends Router {
   }
 
   private async swagger() {
-    const opts = DEAFAULT_SWAGGER_OPTS;
+    const opts = swagger.DEFAULT_OPTS;
+    opts.info.description = this.description;
+    opts.info.title = this.name;
+    opts.info.version = this.version;
+    opts.host = this.host;
+    
     const swaggerRoot = getSwagger();
     const swaggerFiles = readdirSync(swaggerRoot).map((a) => "/" + a);
-    const swaggerHtml = generateHTML();
+    const swaggerHtml = swagger.generateHTML();
     const initOptions = { swaggerDoc: opts };
-    const stringDocs = swaggerStringify(initOptions);
-    const content = SWAGGER_INIT_JS_TMPL.replace(
-      "<% swaggerOptions %>",
-      stringDocs
-    );
+    const stringDocs = swagger.stringify(initOptions);
+    const content = swagger.JS_TMPL.replace("<% swaggerOptions %>", stringDocs);
 
     this.use((req, res, next) => {
       if (req.url == "/swagger-ui-init.js") {
