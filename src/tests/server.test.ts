@@ -1,4 +1,4 @@
-import { Server } from "../src";
+import { Server } from '../index';
 
 describe("Testing Server class", () => {
   let app = new Server();
