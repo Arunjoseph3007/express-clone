@@ -11,7 +11,7 @@ jobs:
         with:
           node-version: 16.10.0
       - name: Install all dependencies
-        run: yarn --frozen-lockfile
+        run: yarn --frozen-lockfile --ignore-engines
       - name: Compile typescript
         run: yarn build
       - name: Run tests
