@@ -1,0 +1,18 @@
+name: Testing the Library
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pulling the repo
+        uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.9.0
+      - name: Install all dependencies
+        run: yarn --frozen-lockfile
+      - name: Compile typescript
+        run: yarn build
+      - name: Run tests
+        run: yarn test
