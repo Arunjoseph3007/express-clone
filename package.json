@@ -28,8 +28,9 @@
     "dev": "nodemon src/index.ts",
     "play": "nodemon src/index.play.ts",
     "test": "jest",
-    "coverage":"jest --coverage",
-    "build": "tsc -p .",
+    "test:dev":"jest --watchAll",
+    "test:coverage":"jest --coverage",
+    "build": "rm -rf dist && tsc -p .",
     "buildAndStart": "tsc -p . && node dist/index.js"
   },
   "devDependencies": {
