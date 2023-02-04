@@ -21,23 +21,14 @@ export default class Router {
     this.docs.push(doc);
   }
 
-  private addEndPointAndDocument(
-    path: string,
-    method: MethodType,
-    ...handlers: HandlerFunction[]
-  ) {
+  private addEndPointAndDocument(...handlers: Omit<TDoc, "group" | "type">[]) {
     const type = HandlerType.endpoint;
-    handlers.forEach((handler) => {
+    handlers.forEach(({ path, method, handler }) => {
       this.addHandler({ path, method, handler, type });
     });
 
-    this.addDoc({
-      path,
-      method,
-      type,
-      handler: handlers.pop() as HandlerFunction,
-      group: "/",
-    });
+    const { path, method, handler, input, output } = handlers.pop() as TDoc;
+    this.addDoc({ path, method, type, handler, group: "/", input, output });
   }
 
   /**
@@ -112,7 +103,13 @@ export default class Router {
       }
     };
 
-    this.addEndPointAndDocument(path, MethodType.POST, typeSafeHandler);
+    this.addEndPointAndDocument({
+      path,
+      method: MethodType.POST,
+      handler: typeSafeHandler,
+      input: inp,
+      output: out,
+    });
     return this;
   }
 
@@ -123,7 +120,9 @@ export default class Router {
    * @returns
    */
   all(path: string, ...handlers: Array<HandlerFunction>) {
-    this.addEndPointAndDocument(path, MethodType.ALL, ...handlers);
+    this.addEndPointAndDocument(
+      ...handlers.map((handler) => ({ handler, path, method: MethodType.ALL }))
+    );
     return this;
   }
 
@@ -134,7 +133,9 @@ export default class Router {
    * @returns
    */
   get(path: string, ...handlers: Array<HandlerFunction>) {
-    this.addEndPointAndDocument(path, MethodType.GET, ...handlers);
+    this.addEndPointAndDocument(
+      ...handlers.map((handler) => ({ handler, path, method: MethodType.GET }))
+    );
 
     return this;
   }
@@ -146,7 +147,9 @@ export default class Router {
    * @returns
    */
   post(path: string, ...handlers: Array<HandlerFunction>) {
-    this.addEndPointAndDocument(path, MethodType.POST, ...handlers);
+    this.addEndPointAndDocument(
+      ...handlers.map((handler) => ({ handler, path, method: MethodType.POST }))
+    );
 
     return this;
   }
@@ -158,7 +161,9 @@ export default class Router {
    * @returns
    */
   put(path: string, ...handlers: Array<HandlerFunction>) {
-    this.addEndPointAndDocument(path, MethodType.PUT, ...handlers);
+    this.addEndPointAndDocument(
+      ...handlers.map((handler) => ({ handler, path, method: MethodType.PUT }))
+    );
 
     return this;
   }
@@ -170,7 +175,13 @@ export default class Router {
    * @returns
    */
   patch(path: string, ...handlers: Array<HandlerFunction>) {
-    this.addEndPointAndDocument(path, MethodType.PATCH, ...handlers);
+    this.addEndPointAndDocument(
+      ...handlers.map((handler) => ({
+        handler,
+        path,
+        method: MethodType.PATCH,
+      }))
+    );
 
     return this;
   }
@@ -182,7 +193,13 @@ export default class Router {
    * @returns
    */
   delete(path: string, ...handlers: Array<HandlerFunction>) {
-    this.addEndPointAndDocument(path, MethodType.DELETE, ...handlers);
+    this.addEndPointAndDocument(
+      ...handlers.map((handler) => ({
+        handler,
+        path,
+        method: MethodType.DELETE,
+      }))
+    );
 
     return this;
   }
@@ -221,6 +238,8 @@ interface HandlerController extends Handler {
 export interface TDoc extends Handler {
   group: string;
   type: HandlerType.endpoint;
+  input?: z.ZodTypeAny;
+  output?: z.ZodTypeAny;
 }
 
 export interface TRPC {

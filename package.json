@@ -25,13 +25,12 @@
   ],
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts",
-    "play": "nodemon src/index.play.ts",
+    "dev": "nodemon src/index.play.ts",
     "test": "jest",
     "test:dev":"jest --watchAll",
     "test:coverage":"jest --coverage",
     "build": "rm -rf dist && tsc -p .",
-    "buildAndStart": "tsc -p . && node dist/index.js"
+    "buildAndStart": "yarn build && yarn start"
   },
   "devDependencies": {
     "@types/content-disposition": "^0.5.5",

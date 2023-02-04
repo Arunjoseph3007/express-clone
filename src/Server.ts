@@ -10,7 +10,6 @@ import {
   NextFunction,
 } from "./interfaces/handler";
 import { match, MatchResult } from "path-to-regexp";
-import { docTemplate } from "./utils/docTemplate";
 import { ParamsDictionary } from "./interfaces/RouteParameter";
 import { getAbsoluteFSPath as getSwagger } from "swagger-ui-dist";
 import { readdirSync } from "fs";
@@ -41,10 +40,10 @@ export default class Server extends Router {
   }) {
     super();
     this.name = options?.name || "Spress App";
-    this.port = options?.port;
+    this.port = options?.port || 8000;
     this.description = options?.description || "";
     this.version = options?.version || "1.0.0";
-    this.host = options?.host || "0.0.0.0";
+    this.host = options?.host || "localhost:8000";
   }
 
   /**
@@ -62,7 +61,6 @@ export default class Server extends Router {
     this.isListening = true;
     this.compileHandlers();
     this.swagger();
-    this.doc();
     this.server = http.createServer(this.handle.bind(this));
     this.server.listen(port, () => {
       console.log(
@@ -138,29 +136,6 @@ export default class Server extends Router {
     await next();
   }
 
-  private doc() {
-    const compiledDocs: Record<string, Array<TDoc>> = {};
-
-    this.docs.forEach((doc) => {
-      if (compiledDocs[doc.group]) {
-        compiledDocs[doc.group] = [...compiledDocs[doc.group], doc];
-      } else {
-        compiledDocs[doc.group] = [doc];
-      }
-    });
-
-    this.handlers.push({
-      path: "/doc",
-      method: MethodType.GET,
-      type: HandlerType.endpoint,
-      handler: (_req, res) => {
-        res.setHeader("Content-Type", "text/html");
-        res.write(docTemplate(compiledDocs));
-        res.end();
-      },
-    });
-  }
-
   private async swagger() {
     const opts = swagger.DEFAULT_OPTS as any;
     opts.info.description = this.description;
@@ -168,7 +143,7 @@ export default class Server extends Router {
     opts.info.version = this.version;
     opts.host = this.host;
     this.stack;
-    opts.paths = getSwaggerPaths(this.handlers);
+    opts.paths = getSwaggerPaths(this.docs);
 
     const swaggerRoot = getSwagger();
     const swaggerFiles = readdirSync(swaggerRoot).map((a) => "/" + a);
@@ -177,6 +152,7 @@ export default class Server extends Router {
     const stringDocs = swagger.stringify(initOptions);
     const content = swagger.JS_TMPL.replace("<% swaggerOptions %>", stringDocs);
 
+    // Middleware for Giving back all the swagger documents and files
     this.handlers.push({
       path: "/(.*)",
       type: HandlerType.middleware,
@@ -193,13 +169,12 @@ export default class Server extends Router {
       },
     });
 
+    // Swagger route which return the OpneAPI documentation
     this.handlers.push({
       path: "/swagger",
       method: MethodType.GET,
       type: HandlerType.endpoint,
       handler: (req, res) => {
-        console.log("hey");
-
         res.set("Content-Type", "text/html");
         res.write(swaggerHtml);
         return res.end();
