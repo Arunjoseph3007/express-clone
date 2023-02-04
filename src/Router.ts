@@ -243,7 +243,7 @@ export interface TDoc extends Handler {
 }
 
 export interface TRPC {
-  inp: z.ZodTypeAny;
-  out: z.ZodTypeAny;
+  inp?: z.ZodTypeAny;
+  out?: z.ZodTypeAny;
   handler: (req: Request, res: Response, next: NextFunction) => void;
 }

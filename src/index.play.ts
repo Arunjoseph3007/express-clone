@@ -1,6 +1,6 @@
 import { z } from "zod";
 import Server, { Router } from ".";
-import { Logger } from "./middlewares";
+import { Logger, cors } from "./middlewares";
 
 const app = new Server({
   name: "Link Test App",
@@ -11,6 +11,7 @@ const app = new Server({
 });
 
 app.use(Logger(Logger.DEV));
+app.use(cors({ origin: "*" }));
 
 app.get("/", (req, res) => {
   return res.status(201).json({ hey: "buddy its working" });
@@ -22,9 +23,7 @@ app.rpc("/rpc", {
     number: z.number(),
     array: z.array(z.string()),
     bools: z.boolean(),
-  }),
-  out: z.object({
-    hey: z.string(),
+    any: z.any(),
   }),
   handler: (req, res) => {
     return { hey: "is it working" };
@@ -33,12 +32,12 @@ app.rpc("/rpc", {
 
 const r = new Router();
 
-r.post("/post", (req, res) => res.json({ foo: "bar" }));
-r.get("/get", (req, res) => res.json({ foo: "bar" }));
-r.get("/:id", (req, res) => res.json({ foo: "bar" }));
-r.put("/put", (req, res) => res.json({ foo: "bar" }));
-r.patch("/patch", (req, res) => res.json({ foo: "bar" }));
-r.delete("/delete", (req, res) => res.json({ foo: "bar" }));
+r.post("/post", (req, res) => res.json({ foo: "bar post" }));
+r.get("/get", (req, res) => res.json({ foo: "bar get" }));
+r.get("/:id", (req, res) => res.json({ foo: "bar from id" }));
+r.put("/put", (req, res) => res.json({ foo: "bar put" }));
+r.patch("/patch", (req, res) => res.json({ foo: "bar patch" }));
+r.delete("/delete", (req, res) => res.json({ foo: "bar delete" }));
 
 app.addRouter("/route", r);
 

@@ -26,6 +26,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "nodemon src/index.play.ts",
+    "dev:js": "nodemon src/index.play.js",
     "test": "jest",
     "test:dev":"jest --watchAll",
     "test:coverage":"jest --coverage",
