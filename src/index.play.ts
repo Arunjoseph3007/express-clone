@@ -1,6 +1,6 @@
 import { z } from "zod";
 import Server, { Router } from ".";
-import { Logger, cors } from "./middlewares";
+import { Logger, CORS } from "./middlewares";
 
 const app = new Server({
   name: "Link Test App",
@@ -11,7 +11,7 @@ const app = new Server({
 });
 
 app.use(Logger(Logger.DEV));
-app.use(cors({ origin: "*" }));
+app.use(CORS({ origin: "*" }));
 
 app.get("/", (req, res) => {
   return res.status(201).json({ hey: "buddy its working" });

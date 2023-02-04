@@ -37,7 +37,7 @@ const configureOrigin = (res: Response, reqOrigin: string, origin: TOrigin) => {
   }
 };
 
-export const cors = (givenOpts?: CorsOptions): HandlerFunction => {
+export const CORS = (givenOpts?: CorsOptions): HandlerFunction => {
   const options = { ...defaultOptions, ...givenOpts };
 
   return function (req, res, next) {
