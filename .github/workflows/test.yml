@@ -9,7 +9,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16.10.0
+          node-version: 18.14.0
       - name: Install all dependencies
         run: yarn --frozen-lockfile
       - name: Compile typescript
