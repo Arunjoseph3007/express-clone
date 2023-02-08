@@ -25,6 +25,7 @@
   ],
   "scripts": {
     "start": "node dist/index.js",
+    "watch": "tsc --watch",
     "dev": "nodemon src/index.play.ts",
     "dev:js": "nodemon src/index.play.js",
     "test": "jest",

@@ -8,6 +8,7 @@ import {
 import { z } from "zod";
 import Request from "./Request";
 import Response from "./Response";
+import { TDoc } from "./interfaces/doc";
 
 /**
  * Create new subrouters using
@@ -98,8 +99,10 @@ export default class Router {
         out.parse(result);
 
         res.status(200).json(result);
-      } catch (e) {
-        next(e);
+      } catch (e: any) {
+        return res
+          .status(e.status)
+          .json({ details: e.details || "Something went wrong" });
       }
     };
 
@@ -233,13 +236,6 @@ interface RouterController {
 
 interface HandlerController extends Handler {
   isRouter: false;
-}
-
-export interface TDoc extends Handler {
-  group: string;
-  type: HandlerType.endpoint;
-  input?: z.ZodTypeAny;
-  output?: z.ZodTypeAny;
 }
 
 export interface TRPC {

@@ -1,6 +1,6 @@
 import fs from "fs";
-import { TDoc } from "../Router";
 import path from "path";
+import { TDoc } from "../interfaces/doc";
 
 const TMP = fs
   .readFileSync(path.join(__dirname, "../../public/templates/doc.html"))

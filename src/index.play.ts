@@ -1,6 +1,7 @@
 import { z } from "zod";
 import Server, { Router } from ".";
-import { Logger, CORS } from "./middlewares";
+import { Logger } from "./middlewares";
+import { throwSpress } from "./SpressError";
 
 const app = new Server({
   name: "Link Test App",
@@ -8,10 +9,10 @@ const app = new Server({
   description: "A test app for building with link",
   host: "localhost:8000",
   version: "1.2.3",
+  allowedHosts: "*",
+  logPattern: Logger.DEV,
 });
 
-app.use(Logger(Logger.DEV));
-app.use(CORS({ origin: "*" }));
 
 app.get("/", (req, res) => {
   return res.status(201).json({ hey: "buddy its working" });
@@ -29,6 +30,13 @@ app.rpc("/rpc", {
     return { hey: "is it working" };
   },
 });
+
+app.rpc('/rpc-error',{
+  handler:(req,res)=>{
+    res.json({hey:'123'})
+    throwSpress(200)
+  }
+})
 
 const r = new Router();
 

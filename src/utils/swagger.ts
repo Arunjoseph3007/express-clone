@@ -87,7 +87,7 @@ window.onload = function() {
 }
 `;
 
-export const HTML_TMPL = `
+const HTML_TMPL = `
 <!-- HTML for static distribution bundle build -->
 <!DOCTYPE html>
 <html lang="en">

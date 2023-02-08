@@ -1,6 +1,6 @@
 import { HandlerFunction } from "../interfaces/handler";
 
-export const cookieParser: HandlerFunction = (req, _, next) => {
+export const CookieParser: HandlerFunction = (req, _, next) => {
   const cookieStr: string = req.req.headers.cookie || "";
 
   req.cookies = cookieStr

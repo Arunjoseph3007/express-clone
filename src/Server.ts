@@ -1,5 +1,5 @@
 import http, { IncomingMessage, ServerResponse } from "http";
-import Router, { TDoc } from "./Router";
+import Router from "./Router";
 import Request from "./Request";
 import Response from "./Response";
 import {
@@ -15,6 +15,8 @@ import { getAbsoluteFSPath as getSwagger } from "swagger-ui-dist";
 import { readdirSync } from "fs";
 import * as swagger from "./utils/swagger";
 import getSwaggerPaths from "./utils/getSwaggerPaths";
+import { CORS, Logger } from "./middlewares";
+import ServerOptions from "./interfaces/serverOptions";
 
 /**
  * Main Server class. You can create a server by using an instance
@@ -31,19 +33,20 @@ export default class Server extends Router {
     return res.status(400).json({ err, message: "Something went wrong" });
   };
 
-  constructor(options?: {
-    name?: string;
-    port?: number;
-    description?: string;
-    version?: string;
-    host?: string;
-  }) {
+  constructor(options?: ServerOptions) {
     super();
     this.name = options?.name || "Spress App";
     this.port = options?.port || 8000;
     this.description = options?.description || "";
     this.version = options?.version || "1.0.0";
     this.host = options?.host || "localhost:8000";
+
+    if (options?.allowedHosts) {
+      this.use(CORS({ origin: options.allowedHosts }));
+    }
+    if (options?.logPattern) {
+      this.use(Logger(options.logPattern));
+    }
   }
 
   /**
@@ -162,7 +165,11 @@ export default class Server extends Router {
           res.set("Content-Type", "application/javascript");
           res.write(content);
           return res.end();
-        } else if (swaggerFiles.includes(req.url)) {
+        } else if (
+          swaggerFiles.includes(req.url) &&
+          req.url != "/package.json" &&
+          req.url != "/index.html"
+        ) {
           return res.sendFile(swaggerRoot + req.url);
         }
         next();

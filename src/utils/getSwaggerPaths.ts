@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { TDoc } from "../Router";
 import { HandlerType, MethodType } from "../interfaces/handler";
 import zodToJsonSchema from "zod-to-json-schema";
+import { TDoc } from "../interfaces/doc";
 
 export default function getSwaggerPaths(handlers: Array<TDoc>) {
   return handlers
